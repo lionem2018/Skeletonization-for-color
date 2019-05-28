@@ -22,6 +22,7 @@ SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 # 디폴드 데이터 경로
 DEFAULT_LABEL_FILE = os.path.join(SCRIPT_PATH, '../labels/2350-common-hangul.txt')
 DEFAULT_FONTS_IMAGE_DIR = os.path.join(SCRIPT_PATH, '../image-data/hangul-images')
+DEFAULT_WHITE_SKELETON_IMAGE_DIR = os.path.join(SCRIPT_PATH, '../skeleton-image-data/skeleton-images-white')
 DEFAULT_SKELETON_IMAGE_DIR = os.path.join(SCRIPT_PATH, '../skeleton-image-data/skeleton-images')
 DEFAULT_OUTPUT_DIR = os.path.join(SCRIPT_PATH, '../hangul-skeleton-combine-images')
 DEFAULT_LABEL_CSV = os.path.join(SCRIPT_PATH, '../image-data/labels-map.csv')
@@ -29,8 +30,10 @@ DEFAULT_LABEL_CSV = os.path.join(SCRIPT_PATH, '../image-data/labels-map.csv')
 
 # 하나의 한글 이미지 정보를 입력 받아 스켈레톤 이미지를 찾아 전처리한 후 나란히 연결함
 def combine(src, src_path):
-    if args.b_dir is None:
-        raise Exception("missing b_dir")
+    if args.b1_dir is None:
+        raise Exception("missing b1_dir")
+    elif args.b2_dir is None:
+        raise Exception("missing b2_dir")
 
     # find corresponding file in b_dir, could have a different extension
     # b_dir에서 해당 파일 탐색, 다른 확장자를 가질 수도 있음
@@ -38,9 +41,11 @@ def combine(src, src_path):
     # 해당 이름을 가진 스켈레톤 이미지의 경로를 얻음(여기서는 sibling-형제-으로 표현)
     basename, _ = os.path.splitext(os.path.basename(src_path))
     for ext in [".png", ".jpg"]:
-        sibling_path = os.path.join(args.b_dir, basename + ext)
-        if os.path.exists(sibling_path):
-            sibling = im.load(sibling_path)
+        sibling_path1 = os.path.join(args.b1_dir, basename + ext)
+        sibling_path2 = os.path.join(args.b2_dir, basename + ext)
+        if os.path.exists(sibling_path1) and os.path.exists(sibling_path2):
+            sibling1 = im.load(sibling_path1)
+            sibling2 = im.load(sibling_path2)
             break
     else:
         raise Exception("could not find sibling image for " + src_path)
@@ -48,27 +53,33 @@ def combine(src, src_path):
     # make sure that dimensions are correct
     # 한글 이미지의 크기와 스켈레톤 이미지의 크기가 같은지 확인
     height, width, _ = src.shape
-    if height != sibling.shape[0] or width != sibling.shape[1]:
+    if height != sibling1.shape[0] or width != sibling1.shape[1] or height != sibling2.shape[0] or width != sibling2.shape[1]:
         raise Exception("differing sizes")
     
-    # convert both images to RGB if necessary
+    # convert all images to RGB if necessary
     # 두 이미지가 만일 그레이스케일 이미지라면 RGB로 변환
     if src.shape[2] == 1:
         src = im.grayscale_to_rgb(images=src)
 
-    if sibling.shape[2] == 1:
-        sibling = im.grayscale_to_rgb(images=sibling)
+    if sibling1.shape[2] == 1:
+        sibling1 = im.grayscale_to_rgb(images=sibling1)
+
+    if sibling2.shape[2] == 1:
+        sibling2 = im.grayscale_to_rgb(images=sibling2)
 
     # remove alpha channel
     # 두 이미지의 알파 채널(투명도)를 삭제함
     if src.shape[2] == 4:
         src = src[:,:,:3]
     
-    if sibling.shape[2] == 4:
-        sibling = sibling[:,:,:3]
+    if sibling1.shape[2] == 4:
+        sibling1 = sibling1[:,:,:3]
+
+    if sibling2.shape[2] == 4:
+        sibling2 = sibling2[:,:,:3]
 
     # 두 이미지를 하나로 합쳐 리턴
-    return np.concatenate([src, sibling], axis=1)
+    return np.concatenate([src, sibling1, sibling2], axis=1)
 
 
 def process(src_path, dst_path, label_dict, labels, labels_csv, image_dir):
@@ -116,7 +127,7 @@ def complete():
             remaining = 0
 
         print("%d/%d complete  %0.2f images/sec  %dm%ds elapsed  %dm%ds remaining"
-              % (num_complete, total, rate, elapsed// 60, elapsed % 60, remaining // 60, remaining % 60))
+              % (num_complete, total, rate, elapsed // 60, elapsed % 60, remaining // 60, remaining % 60))
 
         last_complete = now
 
@@ -205,8 +216,10 @@ if __name__ == '__main__':
     parser.add_argument("--operation", default='combine', choices=["combine"])
     parser.add_argument("--workers", type=int, default=1, help="number of workers")
     # combine
-    parser.add_argument("--b_dir", type=str, default=DEFAULT_SKELETON_IMAGE_DIR,
-                        help="path to folder containing B images for combine operation")
+    parser.add_argument("--b1_dir", type=str, default=DEFAULT_WHITE_SKELETON_IMAGE_DIR,
+                        help="path to folder containing B images of white characters for combine operation")
+    parser.add_argument("--b2_dir", type=str, default=DEFAULT_SKELETON_IMAGE_DIR,
+                        help="path to folder containing B images of colored characters for combine operation")
     # labels
     parser.add_argument('--image-label-csv', type=str, dest='labels_csv',
                         default=DEFAULT_LABEL_CSV,
