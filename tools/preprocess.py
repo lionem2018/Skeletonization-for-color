@@ -42,13 +42,19 @@ def combine(src, src_path):
     basename, _ = os.path.splitext(os.path.basename(src_path))
     for ext in [".png", ".jpg"]:
         sibling_path1 = os.path.join(args.b1_dir, basename + ext)
-        sibling_path2 = os.path.join(args.b2_dir, basename + ext)
-        if os.path.exists(sibling_path1) and os.path.exists(sibling_path2):
+        if os.path.exists(sibling_path1):
             sibling1 = im.load(sibling_path1)
+            break
+    else:
+        raise Exception("could not find sibling1 image for " + src_path)
+
+    for ext in [".png", ".jpg"]:
+        sibling_path2 = os.path.join(args.b2_dir, basename + ext)
+        if os.path.exists(sibling_path2):
             sibling2 = im.load(sibling_path2)
             break
     else:
-        raise Exception("could not find sibling image for " + src_path)
+        raise Exception("could not find sibling2 image for " + src_path)
 
     # make sure that dimensions are correct
     # 한글 이미지의 크기와 스켈레톤 이미지의 크기가 같은지 확인
