@@ -142,11 +142,11 @@ def generate_skeleton_images(labels_csv, label_file, fonts_image_dir, output_dir
         # global_thresh = 0                                                      # is it ok for our case?
         # image = image > global_thresh
 
-        block_size = 5
+        block_size = 3
         binary_adaptive = threshold_local(image, block_size)
         binary_image = image > binary_adaptive
 
-        binary_image = binary_closing(binary_image)
+        binary_image = binary_closing(binary_image, square(3))
         binary_image = binary_erosion(binary_image, square(2))
 
         # save binary images
