@@ -5,7 +5,7 @@ import glob
 import os
 import re
 
-from skimage import img_as_bool,img_as_uint, io as ioo
+from skimage import img_as_bool,img_as_uint, img_as_ubyte, io as ioo
 from skimage.filters import threshold_otsu
 from skimage.io import imread
 from skimage.color import rgb2gray
@@ -71,6 +71,11 @@ def generate_skeleton_images(labels_csv, label_file, fonts_image_dir, output_dir
     if not os.path.exists(image_dir):
         os.makedirs(os.path.join(image_dir))
 
+    # Set the path of binary images in output directory.
+    binary_dir = os.path.join(output_dir, 'binary-images-white')
+    if not os.path.exists(binary_dir):
+        os.makedirs(os.path.join(binary_dir))
+
     # Get the list of all the Hangul images. Sorted function is used to order the arbitrary
     # output of glob() which is always arbitrary
     # 모든 한글 이미지에 대한 리스트를 가져옴
@@ -129,6 +134,14 @@ def generate_skeleton_images(labels_csv, label_file, fonts_image_dir, output_dir
         # 골격화 함수를 적용하고 binary_closing 수행(이진 모폴로지 닫기 수행 - 이미지 사이 빈 부분 채우기 위해)
 
         image = img_as_bool(rgb2gray(imread(font_image)))
+
+        # save binary images
+        # 이진 이미지 저장
+        file_string = '{}.png'.format(total_count)
+        file_path = os.path.join(binary_dir, file_string)
+        binary_image = img_as_uint(image)
+        ioo.imsave(fname=file_path, arr=binary_image)
+
         skeleton = binary_closing(thin(image))
 
         # convert image as uint before saving in output directory

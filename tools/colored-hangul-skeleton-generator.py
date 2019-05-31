@@ -6,11 +6,12 @@ import os
 import re
 
 from skimage import img_as_bool,img_as_ubyte, io as ioo
-from skimage.filters import threshold_otsu
+from skimage.filters import threshold_otsu, threshold_local
 from skimage.io import imread
 from skimage.color import rgb2gray, gray2rgb
-from skimage.morphology import skeletonize, binary_closing, thin
+from skimage.morphology import skeletonize, binary_closing, binary_opening, binary_erosion, closing, square, thin
 import matplotlib.pyplot as plt
+from scipy.signal import savgol_filter
 
 SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -70,6 +71,11 @@ def generate_skeleton_images(labels_csv, label_file, fonts_image_dir, output_dir
     image_dir = os.path.join(output_dir, 'skeleton-images')
     if not os.path.exists(image_dir):
         os.makedirs(os.path.join(image_dir))
+
+    # Set the path of binary images in output directory.
+    binary_dir = os.path.join(output_dir, 'binary-images')
+    if not os.path.exists(binary_dir):
+        os.makedirs(os.path.join(binary_dir))
 
     # Get the list of all the Hangul images. Sorted function is used to order the arbitrary
     # output of glob() which is always arbitrary
@@ -131,12 +137,27 @@ def generate_skeleton_images(labels_csv, label_file, fonts_image_dir, output_dir
         original_image = imread(font_image)
 
         image = rgb2gray(original_image)
+
         # global_thresh = threshold_otsu(image)
-        global_thresh = 0                                                      # is it ok for our case?
-        image = image > global_thresh
+        # global_thresh = 0                                                      # is it ok for our case?
+        # image = image > global_thresh
+
+        block_size = 5
+        binary_adaptive = threshold_local(image, block_size)
+        binary_image = image > binary_adaptive
+
+        binary_image = binary_closing(binary_image)
+        binary_image = binary_erosion(binary_image, square(2))
+
+        # save binary images
+        # 이진 이미지 저장
+        file_string = '{}.png'.format(total_count)
+        file_path = os.path.join(binary_dir, file_string)
+        temp_image = img_as_ubyte(binary_image)
+        ioo.imsave(fname=file_path, arr=temp_image)
 
         # image = img_as_bool(rgb2gray(imread(font_image)))
-        skeleton = binary_closing(thin(image))
+        skeleton = binary_closing(thin(binary_image))
 
         # convert image as ubyte before saving in output directory
         # 출력 디렉토리에 저장하기 전에 ubyte로 이미지를 변환
