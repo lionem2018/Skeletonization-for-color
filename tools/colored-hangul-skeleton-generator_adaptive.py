@@ -127,19 +127,25 @@ def generate_skeleton_images(labels_csv, label_file, fonts_image_dir, output_dir
         total_count += 1
 
         # Read the images one by one from the font images directory
-        # Convert them from rgb to gray and then convert it to binary image
+        # Convert them from rgb to gray and then convert it to binary image using adaptive thresholding
         # Then apply skeletonize function and wrap it into binary_closing
         # for converting them into binary
         # 폰트 이미지 디렉토리 부터 이미지를 하나씩 읽어들임
         # RGB의 이미지를 그레이스케일로 변형한 뒤, binary 이미지로 다시 변형 (이미지 이진화 과정)
         # 골격화 함수를 적용하고 binary_closing 수행(이진 모폴로지 닫기 수행 - 이미지 사이 빈 부분 채우기 위해)
 
+        # image = img_as_bool(rgb2gray(imread(image)))
+
+        # Load input image
+        # 입력 이미지 불러옴
         original_image = imread(font_image)
 
+        # Convert rgb image to gray image
+        # rgb 이미지를 gray 이미지로 변경
         image = rgb2gray(original_image)
 
-        # image = erosion(image, square(2))
-
+        # Convert gray image to binary image using adaptive threshold
+        # 적응형 임계 처리를 이용해 gray 이미지를 이진 이미지로 변경
         block_size = 3
         binary_adaptive = threshold_local(image, block_size)
         binary_image = image > binary_adaptive
@@ -148,31 +154,32 @@ def generate_skeleton_images(labels_csv, label_file, fonts_image_dir, output_dir
         # binary_image = binary_closing(binary_image, square(3))
         # binary_image = binary_erosion(binary_image, square(2))
 
-        # save binary images
-        # 이진 이미지 저장
-        file_string = '{}.png'.format(total_count)
-        file_path = os.path.join(binary_dir, file_string)
-        temp_image = img_as_ubyte(binary_image)
-        ioo.imsave(fname=file_path, arr=temp_image)
+        # # save binary images
+        # # 이진 이미지 저장
+        # file_string = '{}.png'.format(total_count)
+        # file_path = os.path.join(binary_dir, file_string)
+        # temp_image = img_as_ubyte(binary_image)
+        # ioo.imsave(fname=file_path, arr=temp_image)
 
-        # image = img_as_bool(rgb2gray(imread(font_image)))
+        # Skeletonize
         skeleton = binary_closing(thin(binary_image))
 
-        # convert image as ubyte before saving in output directory
+        # Convert image as ubyte before saving in output directory
         # 출력 디렉토리에 저장하기 전에 ubyte로 이미지를 변환
         skeleton = img_as_ubyte(skeleton)
 
-        # convert skeleton image as RGB image to make colored skeleton
+        # Convert skeleton image as RGB image to make colored skeleton
         # 색상이 있는 스케렐톤 이미지를 위해 skeleton 이미지를 RGB로 변환
         output_img = gray2rgb(skeleton)
 
-        # change each pixel color to original pixel color
+        # Change each pixel color to original pixel color
         # 각각의 픽셀 색상을 원래 글자 이미지에서 같은 위치의 픽셀 색상으로 변환
         for i in range(0, output_img.shape[0]):
             for j in range(0, output_img.shape[1]):
                 if output_img[i][j][0] == 255 and output_img[i][j][1] == 255 and output_img[i][j][2] == 255:
                     output_img[i][j] = original_image[i][j]
 
+        # Save output image
         # 이미지 저장
         file_string = '{}.png'.format(total_count)
         file_path = os.path.join(image_dir, file_string)     
