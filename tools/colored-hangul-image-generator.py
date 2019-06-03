@@ -78,14 +78,14 @@ def generate_hangul_images(label_file, fonts_dir, output_dir):
             # 빨간색으로 변경
             for i in range(0, 31):
                 for j in range(0, 31):
-                    if pixels[i, j] == (0, 0, 255):
+                    if pixels[i, j] > (0, 0, 128):
                         pixels[i, j] = (255, 0, 0)
 
             # change to green
             # 초록색으로 변경
             for i in range(32, image.size[0]):
                 for j in range(32, image.size[1]):
-                    if pixels[i, j] == (0, 0, 255):
+                    if pixels[i, j] > (0, 0, 128):
                         pixels[i, j] = (0, 255, 0)
 
             file_string = '{}.png'.format(total_count)

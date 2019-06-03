@@ -68,19 +68,14 @@ def generate_skeleton_images(labels_csv, label_file, fonts_image_dir, output_dir
     # setting up skeleton images path for skeleton labels
     # output 디렉토리 안에 스켈레톤 이미지 경로를 설정 (스케렐톤 이미지가 저장될 경로)
     # 나중에 스켈레톤 레이블을 위한 스켈레톤 이미지 경로를 설정하기 위해 사용될 것임
-    image_dir = os.path.join(output_dir, 'skeleton-images')
+    image_dir = os.path.join(output_dir, 'skeleton-images-adaptive')
     if not os.path.exists(image_dir):
         os.makedirs(os.path.join(image_dir))
 
     # Set the path of binary images in output directory.
-    binary_dir = os.path.join(output_dir, 'binary-images')
+    binary_dir = os.path.join(output_dir, 'binary-images-adaptive')
     if not os.path.exists(binary_dir):
         os.makedirs(os.path.join(binary_dir))
-
-    # Set the path of gray images in output directory.
-    gray_dir = os.path.join(output_dir, 'gray-images')
-    if not os.path.exists(gray_dir):
-        os.makedirs(os.path.join(gray_dir))
 
     # Get the list of all the Hangul images. Sorted function is used to order the arbitrary
     # output of glob() which is always arbitrary
@@ -143,20 +138,13 @@ def generate_skeleton_images(labels_csv, label_file, fonts_image_dir, output_dir
 
         image = rgb2gray(original_image)
 
-        image = erosion(image, square(2))
+        # image = erosion(image, square(2))
 
-        # save gray images
-        # 회색조 이미지 저장
-        file_string = '{}.png'.format(total_count)
-        file_path = os.path.join(gray_dir, file_string)
-        temp_image = img_as_ubyte(image)
-        ioo.imsave(fname=file_path, arr=temp_image)
+        block_size = 3
+        binary_adaptive = threshold_local(image, block_size)
+        binary_image = image > binary_adaptive
 
-        # global_thresh = threshold_otsu(image)
-        global_thresh = 0                                                      # is it ok for our case?
-        image = image > global_thresh
-
-        # image = binary_closing(image)
+        binary_image = binary_closing(binary_image)
         # binary_image = binary_closing(binary_image, square(3))
         # binary_image = binary_erosion(binary_image, square(2))
 
@@ -164,11 +152,11 @@ def generate_skeleton_images(labels_csv, label_file, fonts_image_dir, output_dir
         # 이진 이미지 저장
         file_string = '{}.png'.format(total_count)
         file_path = os.path.join(binary_dir, file_string)
-        temp_image = img_as_ubyte(image)
+        temp_image = img_as_ubyte(binary_image)
         ioo.imsave(fname=file_path, arr=temp_image)
 
         # image = img_as_bool(rgb2gray(imread(font_image)))
-        skeleton = binary_closing(thin(image))
+        skeleton = binary_closing(thin(binary_image))
 
         # convert image as ubyte before saving in output directory
         # 출력 디렉토리에 저장하기 전에 ubyte로 이미지를 변환
@@ -182,7 +170,7 @@ def generate_skeleton_images(labels_csv, label_file, fonts_image_dir, output_dir
         # 각각의 픽셀 색상을 원래 글자 이미지에서 같은 위치의 픽셀 색상으로 변환
         for i in range(0, output_img.shape[0]):
             for j in range(0, output_img.shape[1]):
-                if output_img[i][j][0] > 128 and output_img[i][j][1] > 128 and output_img[i][j][2] > 128:
+                if output_img[i][j][0] == 255 and output_img[i][j][1] == 255 and output_img[i][j][2] == 255:
                     output_img[i][j] = original_image[i][j]
 
         # 이미지 저장
