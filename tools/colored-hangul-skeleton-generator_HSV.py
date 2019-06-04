@@ -177,17 +177,17 @@ def generate_skeleton_images(labels_csv, label_file, fonts_image_dir, output_dir
         # rgb 이미지를 그레이 스케일 변환함
         image = rgb2gray(image)
 
+        # Convert gray image to binary image for skeletonization
+        # 골격화를 위해 그레이 이미지를 이진 이미지로 변환
+        image = get_binary(image)
+        # image = img_as_bool(image)
+
         # # save binary images
         # # 이진 이미지 저장
         # file_string = '{}.png'.format(total_count)
         # file_path = os.path.join(binary_dir, file_string)
         # temp_image = img_as_ubyte(image)
         # ioo.imsave(fname=file_path, arr=temp_image)
-
-        # Convert gray image to binary image for skeletonization
-        # 골격화를 위해 그레이 이미지를 이진 이미지로 변환
-        image = get_binary(image)
-        # image = img_as_bool(image)
 
         # Skeletonize
         skeleton = binary_closing(thin(image))

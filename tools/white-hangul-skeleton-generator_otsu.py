@@ -137,9 +137,10 @@ def generate_skeleton_images(labels_csv, label_file, fonts_image_dir, output_dir
 
         image = rgb2gray(imread(font_image))
 
-
-        image = get_binary(image)
+        # Convert gray image to binary
+        # gray 이미지를 이진 이미지로 변환
         # image = img_as_bool(image)
+        image = get_binary(image)
 
         # save binary images
         # 이진 이미지 저장
