@@ -186,8 +186,8 @@ def generate_skeleton_images(labels_csv, label_file, fonts_image_dir, output_dir
 
         # Convert gray image to binary image for skeletonization
         # 골격화를 위해 그레이 이미지를 이진 이미지로 변환
-        # image = get_binary(image)
-        image = img_as_bool(image)
+        image = get_binary(image)
+        # image = img_as_bool(image)
 
         # Skeletonize
         skeleton = binary_closing(thin(image))
