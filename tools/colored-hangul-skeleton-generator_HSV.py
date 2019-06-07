@@ -9,7 +9,7 @@ from skimage import img_as_bool,img_as_ubyte, io as ioo
 from skimage.filters import threshold_otsu, threshold_local
 from skimage.io import imread
 from skimage.color import rgb2gray, gray2rgb, rgb2hsv, hsv2rgb
-from skimage.morphology import skeletonize, binary_closing, binary_opening, binary_erosion, erosion, dilation, closing, square, thin
+from skimage.morphology import skeletonize, skeletonize_3d, binary_closing, binary_opening, binary_erosion, erosion, dilation, closing, square, thin
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -190,7 +190,9 @@ def generate_skeleton_images(labels_csv, label_file, fonts_image_dir, output_dir
         # ioo.imsave(fname=file_path, arr=temp_image)
 
         # Skeletonize
-        skeleton = binary_closing(thin(image))
+        # skeleton = thin(image)
+        skeleton = skeletonize_3d(image)
+        skeleton = binary_closing(skeleton)
 
         # Convert image as ubyte before saving in output directory
         # 출력 디렉토리에 저장하기 전에 ubyte로 이미지를 변환

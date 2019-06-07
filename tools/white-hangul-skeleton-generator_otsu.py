@@ -9,7 +9,7 @@ from skimage import img_as_bool,img_as_uint, img_as_ubyte, io as ioo
 from skimage.filters import threshold_otsu
 from skimage.io import imread
 from skimage.color import rgb2gray
-from skimage.morphology import skeletonize, binary_closing, thin
+from skimage.morphology import skeletonize, skeletonize_3d, thin, binary_closing
 import matplotlib.pyplot as plt
 
 SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -69,7 +69,7 @@ def generate_skeleton_images(labels_csv, label_file, fonts_image_dir, output_dir
     # setting up skeleton images path for skeleton labels
     # output 디렉토리 안에 스켈레톤 이미지 경로를 설정 (스케렐톤 이미지가 저장될 경로)
     # 나중에 스켈레톤 레이블을 위한 스켈레톤 이미지 경로를 설정하기 위해 사용될 것임
-    image_dir = os.path.join(output_dir, 'skeleton-images-white')
+    image_dir = os.path.join(output_dir, 'skeleton-images-white-otsu')
     if not os.path.exists(image_dir):
         os.makedirs(os.path.join(image_dir))
 
@@ -142,14 +142,16 @@ def generate_skeleton_images(labels_csv, label_file, fonts_image_dir, output_dir
         # image = img_as_bool(image)
         image = get_binary(image)
 
-        # save binary images
-        # 이진 이미지 저장
-        file_string = '{}.png'.format(total_count)
-        file_path = os.path.join(binary_dir, file_string)
-        binary_image = img_as_uint(image)
-        ioo.imsave(fname=file_path, arr=binary_image)
+        # # save binary images
+        # # 이진 이미지 저장
+        # file_string = '{}.png'.format(total_count)
+        # file_path = os.path.join(binary_dir, file_string)
+        # binary_image = img_as_uint(image)
+        # ioo.imsave(fname=file_path, arr=binary_image)
 
-        skeleton = binary_closing(thin(image))
+        # skeleton = thin(image)
+        skeleton = skeletonize_3d(image)
+        skeleton = binary_closing(skeleton)
 
         # convert image as uint before saving in output directory
         # 출력 디렉토리에 저장하기 전에 uint로 이미지를 변환
