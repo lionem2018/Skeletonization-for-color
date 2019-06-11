@@ -150,7 +150,8 @@ def generate_skeleton_images(labels_csv, label_file, fonts_image_dir, output_dir
         # ioo.imsave(fname=file_path, arr=binary_image)
 
         # skeleton = thin(image)
-        skeleton = skeletonize_3d(image)
+        skeleton = thin(image, max_iter=2.5)
+        # skeleton = skeletonize_3d(image)
         skeleton = binary_closing(skeleton)
 
         # convert image as uint before saving in output directory
