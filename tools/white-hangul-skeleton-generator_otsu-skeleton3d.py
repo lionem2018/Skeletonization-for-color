@@ -69,7 +69,7 @@ def generate_skeleton_images(labels_csv, label_file, fonts_image_dir, output_dir
     # setting up skeleton images path for skeleton labels
     # output 디렉토리 안에 스켈레톤 이미지 경로를 설정 (스케렐톤 이미지가 저장될 경로)
     # 나중에 스켈레톤 레이블을 위한 스켈레톤 이미지 경로를 설정하기 위해 사용될 것임
-    image_dir = os.path.join(output_dir, 'skeleton-images-white-otsu')
+    image_dir = os.path.join(output_dir, 'skeleton-images-white-otsu-3d')
     if not os.path.exists(image_dir):
         os.makedirs(os.path.join(image_dir))
 
@@ -150,8 +150,8 @@ def generate_skeleton_images(labels_csv, label_file, fonts_image_dir, output_dir
         # ioo.imsave(fname=file_path, arr=binary_image)
 
         # skeleton = thin(image)
-        skeleton = thin(image, max_iter=2.5)
-        # skeleton = skeletonize_3d(image)
+        # skeleton = thin(image, max_iter=2.5)
+        skeleton = skeletonize_3d(image)
         skeleton = binary_closing(skeleton)
 
         # convert image as uint before saving in output directory
