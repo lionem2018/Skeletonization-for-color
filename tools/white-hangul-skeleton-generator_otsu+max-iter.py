@@ -73,10 +73,10 @@ def generate_skeleton_images(labels_csv, label_file, fonts_image_dir, output_dir
     if not os.path.exists(image_dir):
         os.makedirs(os.path.join(image_dir))
 
-    # Set the path of binary images in output directory.
-    binary_dir = os.path.join(output_dir, 'binary-images-white')
-    if not os.path.exists(binary_dir):
-        os.makedirs(os.path.join(binary_dir))
+    # # Set the path of binary images in output directory.
+    # binary_dir = os.path.join(output_dir, 'binary-images-white')
+    # if not os.path.exists(binary_dir):
+    #     os.makedirs(os.path.join(binary_dir))
 
     # Get the list of all the Hangul images. Sorted function is used to order the arbitrary
     # output of glob() which is always arbitrary
@@ -149,9 +149,8 @@ def generate_skeleton_images(labels_csv, label_file, fonts_image_dir, output_dir
         # binary_image = img_as_uint(image)
         # ioo.imsave(fname=file_path, arr=binary_image)
 
-        # skeleton = thin(image)
-        skeleton = thin(image, max_iter=5)
-        # skeleton = skeletonize_3d(image)
+        # Skeletonize (otsu + thin + max iteration(=2.5))
+        skeleton = thin(image, max_iter=2.5)
         skeleton = binary_closing(skeleton)
 
         # convert image as uint before saving in output directory

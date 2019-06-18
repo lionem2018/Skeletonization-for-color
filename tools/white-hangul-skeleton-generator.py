@@ -67,14 +67,14 @@ def generate_skeleton_images(labels_csv, label_file, fonts_image_dir, output_dir
     # setting up skeleton images path for skeleton labels
     # output 디렉토리 안에 스켈레톤 이미지 경로를 설정 (스케렐톤 이미지가 저장될 경로)
     # 나중에 스켈레톤 레이블을 위한 스켈레톤 이미지 경로를 설정하기 위해 사용될 것임
-    image_dir = os.path.join(output_dir, 'skeleton-images-white')
+    image_dir = os.path.join(output_dir, 'skeleton-images-white-original')
     if not os.path.exists(image_dir):
         os.makedirs(os.path.join(image_dir))
 
-    # Set the path of binary images in output directory.
-    binary_dir = os.path.join(output_dir, 'binary-images-white')
-    if not os.path.exists(binary_dir):
-        os.makedirs(os.path.join(binary_dir))
+    # # Set the path of binary images in output directory.
+    # binary_dir = os.path.join(output_dir, 'binary-images-white')
+    # if not os.path.exists(binary_dir):
+    #     os.makedirs(os.path.join(binary_dir))
 
     # Get the list of all the Hangul images. Sorted function is used to order the arbitrary
     # output of glob() which is always arbitrary
@@ -135,13 +135,14 @@ def generate_skeleton_images(labels_csv, label_file, fonts_image_dir, output_dir
 
         image = img_as_bool(rgb2gray(imread(font_image)))
 
-        # save binary images
-        # 이진 이미지 저장
-        file_string = '{}.png'.format(total_count)
-        file_path = os.path.join(binary_dir, file_string)
-        binary_image = img_as_uint(image)
-        ioo.imsave(fname=file_path, arr=binary_image)
+        # # save binary images
+        # # 이진 이미지 저장
+        # file_string = '{}.png'.format(total_count)
+        # file_path = os.path.join(binary_dir, file_string)
+        # binary_image = img_as_uint(image)
+        # ioo.imsave(fname=file_path, arr=binary_image)
 
+        # Skeletonize
         skeleton = binary_closing(thin(image))
 
         # convert image as uint before saving in output directory

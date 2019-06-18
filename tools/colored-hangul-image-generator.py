@@ -39,7 +39,7 @@ def generate_hangul_images(label_file, fonts_dir, output_dir):
     with io.open(label_file, 'r', encoding='utf-8') as f:
         labels = f.read().splitlines()
 
-    image_dir = os.path.join(output_dir, 'hangul-images')
+    image_dir = os.path.join(output_dir, 'hangul-images-color')
     if not os.path.exists(image_dir):
         os.makedirs(os.path.join(image_dir))
 

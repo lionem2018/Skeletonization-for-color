@@ -23,7 +23,7 @@ SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_LABEL_FILE = os.path.join(SCRIPT_PATH, '../labels/2350-common-hangul.txt')
 DEFAULT_FONTS_IMAGE_DIR = os.path.join(SCRIPT_PATH, '../image-data/hangul-images-white')
 DEFAULT_WHITE_SKELETON_IMAGE_DIR = os.path.join(SCRIPT_PATH, '../skeleton-image-data/skeleton-images-white')
-DEFAULT_SKELETON_IMAGE_DIR = os.path.join(SCRIPT_PATH, '../skeleton-image-data/skeleton-images-white-otsu')
+DEFAULT_SKELETON_IMAGE_DIR = os.path.join(SCRIPT_PATH, '../skeleton-image-data/skeleton-images-white-otsu-thin')
 DEFAULT_OUTPUT_DIR = os.path.join(SCRIPT_PATH, '../hangul-skeleton-combine-images')
 DEFAULT_LABEL_CSV = os.path.join(SCRIPT_PATH, '../image-data/labels-map.csv')
 

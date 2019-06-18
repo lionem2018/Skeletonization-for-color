@@ -18,7 +18,7 @@ SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 # Default data paths.
 DEFAULT_LABEL_FILE = os.path.join(SCRIPT_PATH,
                                   '../labels/2350-common-hangul.txt')
-DEFAULT_FONTS_IMAGE_DIR = os.path.join(SCRIPT_PATH, '../image-data/hangul-images')
+DEFAULT_FONTS_IMAGE_DIR = os.path.join(SCRIPT_PATH, '../image-data/hangul-images-color')
 DEFAULT_OUTPUT_DIR = os.path.join(SCRIPT_PATH, '../skeleton-image-data')
 
 DEFAULT_LABEL_CSV = os.path.join(SCRIPT_PATH, '../image-data/labels-map.csv')

@@ -69,14 +69,14 @@ def generate_skeleton_images(labels_csv, label_file, fonts_image_dir, output_dir
     # setting up skeleton images path for skeleton labels
     # output 디렉토리 안에 스켈레톤 이미지 경로를 설정 (스케렐톤 이미지가 저장될 경로)
     # 나중에 스켈레톤 레이블을 위한 스켈레톤 이미지 경로를 설정하기 위해 사용될 것임
-    image_dir = os.path.join(output_dir, 'skeleton-images-white-otsu-3d')
+    image_dir = os.path.join(output_dir, 'skeleton-images-white-otsu-skeleton3d')
     if not os.path.exists(image_dir):
         os.makedirs(os.path.join(image_dir))
 
-    # Set the path of binary images in output directory.
-    binary_dir = os.path.join(output_dir, 'binary-images-white')
-    if not os.path.exists(binary_dir):
-        os.makedirs(os.path.join(binary_dir))
+    # # Set the path of binary images in output directory.
+    # binary_dir = os.path.join(output_dir, 'binary-images-white')
+    # if not os.path.exists(binary_dir):
+    #     os.makedirs(os.path.join(binary_dir))
 
     # Get the list of all the Hangul images. Sorted function is used to order the arbitrary
     # output of glob() which is always arbitrary
@@ -149,8 +149,7 @@ def generate_skeleton_images(labels_csv, label_file, fonts_image_dir, output_dir
         # binary_image = img_as_uint(image)
         # ioo.imsave(fname=file_path, arr=binary_image)
 
-        # skeleton = thin(image)
-        # skeleton = thin(image, max_iter=2.5)
+        # Skeletonize (otsu + skeletonize_3d)
         skeleton = skeletonize_3d(image)
         skeleton = binary_closing(skeleton)
 
